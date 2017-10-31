@@ -26,6 +26,14 @@ addEventListener('mousemove', event => {
 	mouse.y = event.clientY;
 });
 
+document.addEventListener(function(e) {
+
+	if (e.keyCode == 13) {
+
+				console.log('enter stroked');
+			}
+},false);
+
 addEventListener('resize', function() {
 	canvas.width = innerWidth;
 	canvas.height = innerHeight;
@@ -51,7 +59,7 @@ function distance(x1, y1, x2, y2) {
 }
 
 
-// Objects
+// Bubble Ojject
 function Ball(x, y, dx,dy,radius, color) {
 	this.x = x;
 	this.y = y;
@@ -60,7 +68,7 @@ function Ball(x, y, dx,dy,radius, color) {
 	this.radius = radius;
 	this.color = color;
 
-
+	// update function checks to see if x and y are going to hit the borders as well as adding a fixed gravity to the balls
 	this.update = function() {
 		if(this.y + this.radius > canvas.height)
 		{
@@ -84,59 +92,111 @@ function Ball(x, y, dx,dy,radius, color) {
 
 	};
 
+	//update ends here
+
+	//  creates a bubble for the mouse and its movement
 	this.shoot = function(){
-		this.draw();
+	//calls draw to put it into the canvas
+	this.draw();
 	};
 
+
+
+
+	// draws the bubble to the canvas
 	this.draw = function (){
 		c.beginPath();
 		c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
 		c.fillStyle = this.color;
 		c.fill();
 		c.closePath();
-	};
+
+};
 }
-
-
 // Implementation
-var ball;
-var pointer;
-var smallBall;
-var mediumBAll;
-var ballArray= [];
-function init() {
-ballArray=[];
-ball = new Ball(50, 50,3,2,40,'blue');
-smallBall = new Ball(100, 400,3,2,15,'red');
-mediumBAll= new Ball(100, 200,3,2,20,'purple');
-pointer= new Ball(undefined, undefined,3,2,10,'black');
+//balls
 
-	// for (var i = 0; i < 4; i++) {
-	// 	ballArray.push(new Ball(50, 50,3,2,30,'blue'));
-		// objects.push();
-	// }
+// Initiante the bubble array, pointer bubble, and notDebounced boolean
+// var ball;
+// var smallBall;
+// var mediumBAll;
+var pointer;
+var ballArray= [];
+var notDebounced = true;
+
+// Initialization function
+function init() {
+	//create bubble array and pointer
+	ballArray=[];
+	// ball = new Ball(50, 50,3,2,40,'blue');
+	// smallBall = new Ball(100, 400,3,2,15,'red');
+	// mediumBAll= new Ball(100, 200,3,2,20,'purple');
+	pointer= new Ball(undefined, undefined,3,2,10,'black');
+
+	// create Ball objects and push them into the bubble array
+	for (var i = 0; i < 4; i++) {
+		var x= (Math.random() * innerWidth) - 100;
+		var y = (Math.random() * innerHeight) - 100;
+
+		ballArray.push(new Ball(x,y,3,2,30,'blue'));
+	}
 }
 
 // Animation Loop
-function animate() {
-	requestAnimationFrame(animate);
-	c.clearRect(0, 0, canvas.width, canvas.height);
+	function animate() {
+		requestAnimationFrame(animate);
+		//clear canvas
+		c.clearRect(0, 0, canvas.width, canvas.height);
+		pointer.x= mouse.x;
+		pointer.y= mouse.y;
+		pointer.shoot();
 
-	ball.update();
-	smallBall.update();
-	mediumBAll.update();
-	pointer.x= mouse.x;
-	pointer.y= mouse.y;
-	pointer.shoot();
-	if(distance(ball.x,ball.y,pointer.x,pointer.y)< ball.radius + pointer.radius)
-	{
-		ball.color= 'black';
-	}
-		// console.log(distance(ball.x,ball.y,pointer.x,pointer.y));
+		draw(ghost);
 
-	// ballArray.forEach(function(bubble){
-	// 	bubble.update();
-	// });
+
+		ballArray.forEach(function(bubble){
+
+			if((distance(bubble.x,bubble.y,pointer.x,pointer.y)< bubble.radius + pointer.radius) && notDebounced)
+			{
+				notDebounced = false;
+
+				setTimeout(function() {
+					notDebounced = true;
+				}, 500);
+				ballArray = ballArray.filter(function(ball) {
+					return !(ball.x === bubble.x && ball.y === bubble.y);
+				});
+				ballArray.push(new Ball(bubble.x + bubble.dx, bubble.y + bubble.dy,3,2,20,'red'));
+				ballArray.push(new Ball(bubble.x - bubble.dx, bubble.y - bubble.dy,3,2,20,'red'));
+
+			}
+			bubble.update();
+		});
+}
+
+var ghost = {
+	x:(canvas.width)/2,
+	y:canvas.height - 100,
+	// moveUp:    function() { this.y -= 25 },
+	// moveDown:  function() { this.y += 25 },
+	moveLeft:  function() { this.x -= 25 },
+	moveRight: function() { this.x += 25 },
+}
+
+function draw(ghost) {
+	var img = new Image();
+	img.src = "https://media.giphy.com/media/xUA7aRSQ01d3iCEWZO/giphy.gif";
+	c.drawImage(img, ghost.x, ghost.y, 100, 100);
+	document.onkeydown = function(e) {
+	e.preventDefault();
+  switch (e.keyCode) {
+    // case 38: ghost.moveUp();    console.log('up',    ghost); break;
+    // case 40: ghost.moveDown();  console.log('down',  ghost); break;
+    case 37: ghost.moveLeft();  console.log('left',  ghost); break;
+    case 39: ghost.moveRight(); console.log('right', ghost); break;
+  }
+
+}
 }
 
 init();
