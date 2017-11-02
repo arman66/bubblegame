@@ -1,4 +1,5 @@
 // Initial Setup
+console.log("connected");
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
@@ -75,20 +76,24 @@ function Ball(x, y, dx,dy,radius, color) {
 
 	// update function checks to see if x and y are going to hit the borders as well as adding a fixed gravity to the balls
 	this.update = function() {
-		if(this.y + this.radius >= canvas.height)
+		if(this.y + this.radius>= innerHeight)
 		{
 			this.dy = -this.dy;
 
 		}
+
 		else{
-			this.dy += 1.2;
+			this.dy += 0.3;
 		}
+
+
 
 		if(this.x + this.radius >= canvas.width|| this.x - this.radius <= 0)
 		{
 			this.dx = -this.dx;
 
 		}
+
 
 		this.x+= this.dx;
 		this.y+= this.dy;
@@ -137,11 +142,12 @@ function Ball(x, y, dx,dy,radius, color) {
 // var ball;
 // var smallBall;
 // var mediumBAll;
+var promptedbubbles = prompt("How Difficult Do You Want to Play\n 1 Bubble easy\n 3 Bubbles medium\n 5 Bubbles Hard\n 10 Bubbles God Mode");
 var pointer;
 var bullet;
 var ballArray= [];
 var notDebounced = true;
-var notDebounced2= true;
+var alReadyHit= true;
 // Initialization function
 function init() {
 	//create bubble array and pointer
@@ -149,11 +155,12 @@ function init() {
 	bulletArray=[];
 
 	// create Ball objects and push them into the bubble array
-	for (var i = 0; i < 5; i++) {
+	for (var i = 0; i < promptedbubbles; i++) {
 		var x= (Math.random() * innerWidth) - 100;
-		var y = (Math.random() * innerHeight) - 100;
+		var y = (Math.random() * innerHeight) - 200;
 
-		ballArray.push(new Ball(x,y,3,2,30,'blue'));
+
+		ballArray.push(new Ball(x,y,2,2,30,'blue'));
 	}
 
 
@@ -162,7 +169,7 @@ function init() {
 
 // Animation Loop
 function animate() {
-		requestAnimationFrame(animate);
+		var animationId = requestAnimationFrame(animate);
 		//clear canvas
 		c.clearRect(0, 0, canvas.width, canvas.height);
 		//create the mouse pointer bubble
@@ -181,6 +188,22 @@ function animate() {
 
 		ballArray.forEach(function(bubble){
 
+
+			//checks if balls touch mel Gibson
+			if((distance(bubble.x,bubble.y,Mel.x, Mel.y)<bubble.radius -20))
+			{
+
+				cancelAnimationFrame(animationId);
+
+				// c.font = "40px Ariel";
+				// c.textAlign= 'center';
+				// c.fillText("Game Over",innerWidth/2,innerHeight/2);
+
+
+			}
+
+
+
 			for (var i = 0; i < bulletArray.length; i++)
 			{
 					if((distance(bubble.x,bubble.y,bulletArray[i].x,bulletArray[i].y)< bubble.radius + bulletArray[i].radius)&& notDebounced)
@@ -192,28 +215,34 @@ function animate() {
 								notDebounced = true;
 							}, 500);
 
-							if(bubble.color= 'blue')
+							if(bubble.radius===30)
 							{
 								ballArray = ballArray.filter(function(ball)
 										{
 											return !(ball.x === bubble.x && ball.y === bubble.y);
 										});
-								ballArray.push(new Ball(bubble.x + bubble.dx, bubble.y + bubble.dy,3,2,20,'red'));
-								ballArray.push(new Ball(bubble.x - bubble.dx, bubble.y - bubble.dy,3,2,20,'red'));
+								ballArray.push(new Ball(bubble.x, (bubble.y - 100),2,2,20,'red'));
+								ballArray.push(new Ball(bubble.x, (bubble.y - 100),-2,2,20,'red'));
 							}
 
-							else if (bubble.color="red")
+							else if(bubble.radius===20)
 							{
 
 								ballArray = ballArray.filter(function(ball)
 										{
 											return !(ball.x === bubble.x && ball.y === bubble.y);
 										});
-								ballArray.push(new Ball(bubble.x + bubble.dx, bubble.y + bubble.dy,3,2,20,'purple'));
-								ballArray.push(new Ball(bubble.x - bubble.dx, bubble.y - bubble.dy,3,2,20,'purple'));
+								ballArray.push(new Ball(bubble.x,(bubble.y - 100),2,2,10,'purple'));
+								ballArray.push(new Ball(bubble.x,(bubble.y - 100),-2,2,10,'purple'));
 
 							}
-
+							else if(bubble.radius=== 10)
+							{
+								ballArray = ballArray.filter(function(ball)
+										{
+											return !(ball.x === bubble.x && ball.y === bubble.y);
+										});
+							}
 					}
 
 			}
@@ -231,8 +260,8 @@ var Mel = {
 	y:(canvas.height)-100,
 	// moveUp:    function() { this.y -= 25 },
 	// moveDown:  function() { this.y += 25 },
-	moveLeft:  function() { this.x -= 25 },
-	moveRight: function() { this.x += 25 },
+	moveLeft:  function() { this.x -= 40 },
+	moveRight: function() { this.x += 40 },
 };
 
 // Draw Mel Gibson, fucktion called inside animate
@@ -245,8 +274,8 @@ var Mel = {
 			  switch (e.keyCode) {
 			    // case 38: ghost.moveUp();    console.log('up',    ghost); break;
 			    // case 40: ghost.moveDown();  console.log('down',  ghost); break;
-			    case 37: Mel.moveLeft();  console.log('left',  Mel); break;
-			    case 39: Mel.moveRight(); console.log('right', Mel); break;
+			    case 37: Mel.moveLeft();   break;
+			    case 39: Mel.moveRight();  break;
 			  									}
 
 				};
