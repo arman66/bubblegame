@@ -26,13 +26,14 @@ addEventListener('mousemove', event => {
 	mouse.y = event.clientY;
 });
 
-document.addEventListener(function(e) {
+addEventListener('keydown', function(e) {
 
-	if (e.keyCode == 13) {
+	if (e.keyCode == 32) {
 
-				console.log('enter stroked');
-			}
-},false);
+   bulletArray.push(new Ball(Mel.x+45,Mel.y,3,5,10,"black"));
+	 console.log("bullet shot");
+ }
+});
 
 addEventListener('resize', function() {
 	canvas.width = innerWidth;
@@ -40,6 +41,10 @@ addEventListener('resize', function() {
 
 	init();
 });
+// addEventListener('click', function() {
+//
+// 	init();
+// });
 
 
 // Utility Functions
@@ -70,9 +75,9 @@ function Ball(x, y, dx,dy,radius, color) {
 
 	// update function checks to see if x and y are going to hit the borders as well as adding a fixed gravity to the balls
 	this.update = function() {
-		if(this.y + this.radius > canvas.height)
+		if(this.y + this.radius >= canvas.height)
 		{
-			this.dy= -this.dy;
+			this.dy = -this.dy;
 
 		}
 		else{
@@ -81,7 +86,7 @@ function Ball(x, y, dx,dy,radius, color) {
 
 		if(this.x + this.radius >= canvas.width|| this.x - this.radius <= 0)
 		{
-			this.dx= -this.dx;
+			this.dx = -this.dx;
 
 		}
 
@@ -95,12 +100,24 @@ function Ball(x, y, dx,dy,radius, color) {
 	//update ends here
 
 	//  creates a bubble for the mouse and its movement
-	this.shoot = function(){
-	//calls draw to put it into the canvas
-	this.draw();
+	// this.clicker = function(){
+	// //calls draw to put it into the canvas
+	// this.draw();
+	// };
+
+	// this.shoot = function(){
+	// //calls draw to put it into the canvas
+	// this.update = fucktion(){
+	// }
+	// this.draw();
+	// };
+
+	this.disparar= function () {
+
+		this.y -= this.dy;
+		this.dy= 10;
+		this.draw();
 	};
-
-
 
 
 	// draws the bubble to the canvas
@@ -121,83 +138,121 @@ function Ball(x, y, dx,dy,radius, color) {
 // var smallBall;
 // var mediumBAll;
 var pointer;
+var bullet;
 var ballArray= [];
 var notDebounced = true;
-
+var notDebounced2= true;
 // Initialization function
 function init() {
 	//create bubble array and pointer
 	ballArray=[];
-	// ball = new Ball(50, 50,3,2,40,'blue');
-	// smallBall = new Ball(100, 400,3,2,15,'red');
-	// mediumBAll= new Ball(100, 200,3,2,20,'purple');
-	pointer= new Ball(undefined, undefined,3,2,10,'black');
+	bulletArray=[];
 
 	// create Ball objects and push them into the bubble array
-	for (var i = 0; i < 4; i++) {
+	for (var i = 0; i < 5; i++) {
 		var x= (Math.random() * innerWidth) - 100;
 		var y = (Math.random() * innerHeight) - 100;
 
 		ballArray.push(new Ball(x,y,3,2,30,'blue'));
 	}
+
+
+		bulletArray.push(new Ball(Mel.x+45,Mel.y,3,undefined,10,"black"));
 }
 
 // Animation Loop
-	function animate() {
+function animate() {
 		requestAnimationFrame(animate);
 		//clear canvas
 		c.clearRect(0, 0, canvas.width, canvas.height);
-		pointer.x= mouse.x;
-		pointer.y= mouse.y;
-		pointer.shoot();
+		//create the mouse pointer bubble
+		// pointer.x= mouse.x;
+		// pointer.y= mouse.y;
+		// pointer.clicker();
+		//creates the bullet on top of mel Gibson
+		// bullet.disparar();
 
-		draw(ghost);
+		// draws mel Gibson
+		draw(Mel);
 
+		bulletArray.forEach(function(bullets){
+			bullets.disparar();
+		});
 
 		ballArray.forEach(function(bubble){
 
-			if((distance(bubble.x,bubble.y,pointer.x,pointer.y)< bubble.radius + pointer.radius) && notDebounced)
+			for (var i = 0; i < bulletArray.length; i++)
 			{
-				notDebounced = false;
+					if((distance(bubble.x,bubble.y,bulletArray[i].x,bulletArray[i].y)< bubble.radius + bulletArray[i].radius)&& notDebounced)
+					{
+						notDebounced = false;
 
-				setTimeout(function() {
-					notDebounced = true;
-				}, 500);
-				ballArray = ballArray.filter(function(ball) {
-					return !(ball.x === bubble.x && ball.y === bubble.y);
-				});
-				ballArray.push(new Ball(bubble.x + bubble.dx, bubble.y + bubble.dy,3,2,20,'red'));
-				ballArray.push(new Ball(bubble.x - bubble.dx, bubble.y - bubble.dy,3,2,20,'red'));
+						setTimeout(function()
+							{
+								notDebounced = true;
+							}, 500);
+
+							if(bubble.color= 'blue')
+							{
+								ballArray = ballArray.filter(function(ball)
+										{
+											return !(ball.x === bubble.x && ball.y === bubble.y);
+										});
+								ballArray.push(new Ball(bubble.x + bubble.dx, bubble.y + bubble.dy,3,2,20,'red'));
+								ballArray.push(new Ball(bubble.x - bubble.dx, bubble.y - bubble.dy,3,2,20,'red'));
+							}
+
+							else if (bubble.color="red")
+							{
+
+								ballArray = ballArray.filter(function(ball)
+										{
+											return !(ball.x === bubble.x && ball.y === bubble.y);
+										});
+								ballArray.push(new Ball(bubble.x + bubble.dx, bubble.y + bubble.dy,3,2,20,'purple'));
+								ballArray.push(new Ball(bubble.x - bubble.dx, bubble.y - bubble.dy,3,2,20,'purple'));
+
+							}
+
+					}
 
 			}
+
+
+
+
 			bubble.update();
 		});
 }
 
-var ghost = {
+// Initialize MEl Gibson
+var Mel = {
 	x:(canvas.width)/2,
-	y:canvas.height - 100,
+	y:(canvas.height)-100,
 	// moveUp:    function() { this.y -= 25 },
 	// moveDown:  function() { this.y += 25 },
 	moveLeft:  function() { this.x -= 25 },
 	moveRight: function() { this.x += 25 },
-}
+};
 
-function draw(ghost) {
-	var img = new Image();
-	img.src = "https://media.giphy.com/media/xUA7aRSQ01d3iCEWZO/giphy.gif";
-	c.drawImage(img, ghost.x, ghost.y, 100, 100);
-	document.onkeydown = function(e) {
-	e.preventDefault();
-  switch (e.keyCode) {
-    // case 38: ghost.moveUp();    console.log('up',    ghost); break;
-    // case 40: ghost.moveDown();  console.log('down',  ghost); break;
-    case 37: ghost.moveLeft();  console.log('left',  ghost); break;
-    case 39: ghost.moveRight(); console.log('right', ghost); break;
-  }
+// Draw Mel Gibson, fucktion called inside animate
+			function draw(Mel) {
+				var img = new Image();
+				img.src = "https://media.giphy.com/media/xUA7aRSQ01d3iCEWZO/giphy.gif";
+				c.drawImage(img, Mel.x, Mel.y, 100, 100);
+				document.onkeydown = function(e) {
+				e.preventDefault();
+			  switch (e.keyCode) {
+			    // case 38: ghost.moveUp();    console.log('up',    ghost); break;
+			    // case 40: ghost.moveDown();  console.log('down',  ghost); break;
+			    case 37: Mel.moveLeft();  console.log('left',  Mel); break;
+			    case 39: Mel.moveRight(); console.log('right', Mel); break;
+			  									}
 
-}
-}
+				};
+			}
+
+
 
 init();
 animate();
