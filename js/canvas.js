@@ -83,7 +83,7 @@ function Ball(x, y, dx,dy,radius, color) {
 		}
 
 		else{
-			this.dy += 0.3;
+			this.dy += 0.1;
 		}
 
 
@@ -101,21 +101,6 @@ function Ball(x, y, dx,dy,radius, color) {
 		this.draw();
 
 	};
-
-	//update ends here
-
-	//  creates a bubble for the mouse and its movement
-	// this.clicker = function(){
-	// //calls draw to put it into the canvas
-	// this.draw();
-	// };
-
-	// this.shoot = function(){
-	// //calls draw to put it into the canvas
-	// this.update = fucktion(){
-	// }
-	// this.draw();
-	// };
 
 	this.disparar= function () {
 
@@ -136,12 +121,6 @@ function Ball(x, y, dx,dy,radius, color) {
 };
 }
 // Implementation
-//balls
-
-// Initiante the bubble array, pointer bubble, and notDebounced boolean
-// var ball;
-// var smallBall;
-// var mediumBAll;
 var promptedbubbles = prompt("How Difficult Do You Want to Play\n 1 Bubble easy\n 3 Bubbles medium\n 5 Bubbles Hard\n 10 Bubbles God Mode");
 var pointer;
 var bullet;
@@ -190,15 +169,14 @@ function animate() {
 
 
 			//checks if balls touch mel Gibson
-			if((distance(bubble.x,bubble.y,Mel.x, Mel.y)<bubble.radius -20))
+			if((distance(bubble.x,bubble.y,Mel.x+50, Mel.y+50)< bubble.radius + 50))
 			{
-
+				console.log("collision detected"+ Mel.x + Mel.y);
 				cancelAnimationFrame(animationId);
 
-				// c.font = "40px Ariel";
-				// c.textAlign= 'center';
-				// c.fillText("Game Over",innerWidth/2,innerHeight/2);
-
+				c.font = "40px Ariel";
+				c.textAlign= 'center';
+				c.fillText("Game Over",innerWidth/2,innerHeight/2);
 
 			}
 
@@ -243,11 +221,18 @@ function animate() {
 											return !(ball.x === bubble.x && ball.y === bubble.y);
 										});
 							}
+
 					}
 
 			}
 
+			if (ballArray.length===0) {
 
+				cancelAnimationFrame(animationId);
+				c.font = "40px Ariel";
+				c.textAlign= 'center';
+				c.fillText("YOU WON!!",innerWidth/2,innerHeight/2);
+			}
 
 
 			bubble.update();
