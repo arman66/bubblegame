@@ -2,7 +2,8 @@
 console.log("connected");
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
-
+// var music= document.querySelector(".musicaFondo");
+var shootAudio= document.querySelector('audio');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
@@ -32,6 +33,7 @@ addEventListener('keydown', function(e) {
 	if (e.keyCode == 32) {
 
    bulletArray.push(new Ball(Mel.x+45,Mel.y,3,5,10,"black"));
+	 shootAudio.play();
 	 console.log("bullet shot");
  }
 });
@@ -121,7 +123,7 @@ function Ball(x, y, dx,dy,radius, color) {
 };
 }
 // Implementation
-var promptedbubbles = prompt("How Difficult Do You Want to Play\n 1 Bubble easy\n 3 Bubbles medium\n 5 Bubbles Hard\n 10 Bubbles God Mode");
+var promptedbubbles = prompt("How Difficult Do You Want to Play\n 1 Bubble easy\n 2 Bubbles medium\n 3 Bubbles Hard\n 5 Bubbles God Mode");
 var pointer;
 var bullet;
 var ballArray= [];
@@ -157,7 +159,7 @@ function animate() {
 		// pointer.clicker();
 		//creates the bullet on top of mel Gibson
 		// bullet.disparar();
-
+		// music.play();
 		// draws mel Gibson
 		draw(Mel);
 
@@ -197,6 +199,7 @@ function animate() {
 							{
 								ballArray = ballArray.filter(function(ball)
 										{
+											shootAudio.play();
 											return !(ball.x === bubble.x && ball.y === bubble.y);
 										});
 								ballArray.push(new Ball(bubble.x, (bubble.y - 100),2,2,20,'red'));
@@ -208,6 +211,7 @@ function animate() {
 
 								ballArray = ballArray.filter(function(ball)
 										{
+											shootAudio.play();
 											return !(ball.x === bubble.x && ball.y === bubble.y);
 										});
 								ballArray.push(new Ball(bubble.x,(bubble.y - 100),2,2,10,'purple'));
@@ -218,6 +222,7 @@ function animate() {
 							{
 								ballArray = ballArray.filter(function(ball)
 										{
+											shootAudio.play();
 											return !(ball.x === bubble.x && ball.y === bubble.y);
 										});
 							}
